@@ -1,0 +1,34 @@
+#autor: José Astorga
+#P1
+:PC owl:equivalentClass [ owl:unionOf(:Laptop :Desktop)] .
+
+#P2
+:WindowsPC owl:equivalentClass [ owl:someValuesFrom [owl:hasValue :WindowsOS; owl:onProperty rdf:type]; owl:onProperty :hasOS ]  . 
+
+#P3
+:WindowsLaptop owl:equivalentClass [owl:intersectionOf (:Laptop :WindowsPC)] .
+
+#P4
+#:CarlasLaptop rdf:type :GamingPC .
+[owl:hasValue :Crysis ; owl:onProperty :canRun ] rdfs:subClassOf :GamingPC  .
+
+#P5
+:DualCoreProcessor rdfs:subClassOf :Processor .
+:DualCoreProcessor owl:equivalentClass [ owl:hasValue 2; owl:onProperty :numberOfCores] .
+
+
+#P6
+
+[owl:hasValue :WindowsLaptop; owl:onProperty rdf:type; owl:hasValue :SingleBoot; owl:onProperty	 rdf:type ]  rdfs:subClassOf [owl:allValuesFrom :WindowsOS; owl:onProperty :hasOS] .
+
+#P7
+:SingleBoot rdfs:subClassOf [owl:maxCardinality 1; owl:onProperty :hasOS] .
+
+#P8
+#:WindowsPC rdfs:subClassOf [owl:maxQualifiedCardinality 0 ; owl:onProperty :hasOS ; owl:onClass :LinuxOS] .
+
+
+#P9
+
+:Ubuntu14 owl:differentFrom :Windows10 .
+#:DualBoot rdfs:subClassOf [owl:maxCardinality 2; owl:onProperty :hasOS] .
