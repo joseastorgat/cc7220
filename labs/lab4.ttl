@@ -1,0 +1,84 @@
+#Laboratorio 4 - La Web de Datos
+#José Astorga
+
+# P1 #
+:hasBrand owl:inverseOf :produces .
+
+# P2 #
+:hasProcessor rdfs:subPropertyOf :hasPart .
+:hasGPU rdfs:subPropertyOf :hasPart .
+
+# P3 #
+:hasPart a owl:TransitiveProperty .
+
+# P4 #
+:hasGPU owl:propertyChainAxiom (:hasProcessor :hasGPU) .
+
+# P5 #
+:hasBrand a owl:FunctionalProperty .
+
+# P6 #
+:hasMotherBoard a owl:AsymmetricProperty .
+#:MSI-Intel-H110M :hasMotherBoard :DesktopA .
+
+# P7 # 
+:hasSocket owl:inverseOf :isSocketOf .
+:supportsProcessor owl:propertyChainAxiom (:supportsSocket :isSocketOf) .
+
+# P8 # 
+:alternativeOf owl:propertyChainAxiom (:hasSocket :isSocketOf) .
+
+# P9 # 
+
+:Processor owl:disjointWith :Computer .
+#:hasGPU rdfs:domain :Computer .
+
+# P10 # 
+:hasGPU  rdfs:range :GPU .
+
+# P11 #
+:Processor rdfs:subClassOf [owl:allValuesFrom :IntegratedGPU ; owl:onProperty :hasGPU] .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
