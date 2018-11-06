@@ -1,0 +1,31 @@
+#Laboratorio 3 - La Web de Datos
+#José Astorga
+
+# P1 #
+:nombreTaxon rdfs:subPropertyOf :nombre .
+
+# P2 #
+:habito rdfs:domain :Animal .
+
+# P3 #
+:Animal rdfs:subClassOf :SerVivo .
+
+# P4 #
+:habitaEn rdfs:range :Habitat .
+
+# P5 #
+:Genero rdfs:subClassOf :Taxon .
+:enFamilia rdfs:range :Taxon .
+:enInfraClase rdfs:range :Taxon .
+
+# ó
+# :Genero rdfs:subClassOf :Taxon .
+# :Familia rdfs:subClassOf :Taxon .
+# :enInfraClase rdfs:range :Taxon .
+
+# P6 #
+:enFamilia rdfs:subPropertyOf :enTaxon .
+:enInfraClase rdfs:subPropertyOf :enTaxon .
+
+# P7 # 
+:enTaxon rdfs:subPropertyOf rdfs:subClassOf .
