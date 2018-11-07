@@ -27,10 +27,10 @@
 #:WindowsPC rdfs:subClassOf [owl:maxQualifiedCardinality 0 ; owl:onProperty :hasOS ; owl:onClass :LinuxOS] .
 
 #P9
-#:Ubuntu14 owl:differentFrom :Windows10 .
 :DualBoot rdfs:subClassOf [owl:cardinality 2; owl:onProperty :hasOS] .
+#:Ubuntu14 owl:differentFrom :Windows10 .
 
-#No se infiere que :BobDesktop es :Dualboot  ya que no podemos asumir su cardinalidad, podría faltar información sobre los OS que posee. 
-#También no se puede asumir que los 2 sistemas operativos que tienen son diferentes
-#La restricción de cardinalidad no nos permite deducir que si un predicado cumple la restricción entonces pertenece a la clase.
-
+#No se infiere que :BobDesktop es :DualBoot
+# Esto por que se ha definido una restricción que deben cumplir todos los :DualBoot, pero que no implica que si un "recurso x" cumple con la restricción entonces es un :DualBoot (no se puede inferir)
+# (:DualBoot es una subclase de todos los elementos que tienen cardinalidad 2 en la propiedad :hasOS, pero no todos los elementos de cardinalidad 2 son :DualBoot ) #otra manera de decirlo
+# Además, la cardinalidad de la propiedad :hasOS en :BobDesktop no es 2 necesariamente, ya que para que sea 2 primero hay que definir que :Windows10 no es igual a :Ubuntu14 (en el caso de que si se pudiese inferir)
