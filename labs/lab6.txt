@@ -1,0 +1,155 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX org:  <http://www.w3.org/ns/org#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://datosabiertos.cl/v/>
+
+#P1
+SELECT DISTINCT ?name
+FROM <http://example.org/transparencia>
+WHERE { ?person a foaf:Person.
+        ?person foaf:name ?name . }
+LIMIT 100
+
+
+
+#P2
+SELECT DISTINCT ?name ?nombres ?apellidoPaterno ?apellidoMaterno
+FROM <http://example.org/transparencia>
+WHERE { ?person a foaf:Person.
+        ?person foaf:name ?name . 
+        ?person :nombres ?nombres .
+        ?person :apellidoPaterno ?apellidoPaterno .
+        OPTIONAL {?person :apellidoMaterno ?apellidoMaterno .}
+}
+LIMIT 100
+
+
+#P3
+
+SELECT DISTINCT ?estamento
+FROM <http://example.org/transparencia>
+WHERE { ?membership a org:Membership; :estamento ?estamento
+}
+
+ORDER BY ASC(?estamento)
+
+
+
+#P4
+SELECT DISTINCT ?name ?estamento
+FROM <http://example.org/transparencia>
+WHERE { ?person a foaf:Person; foaf:name ?name . 
+        ?membership a org:Membership; org:member ?person .
+        ?membership :estamento ?estamento .
+}
+LIMIT 100
+
+
+#P5
+
+SELECT DISTINCT ?name
+FROM <http://example.org/transparencia>
+WHERE { 
+        ?org a org:OrganizationalUnit; foaf:name 'Facultad de Ciencias Físicas y Matemáticas' .
+        ?membership a org:Membership; org:organization ?org .
+        ?membership org:member ?person .
+        ?person a foaf:Person; foaf:name ?name .
+
+}
+
+LIMIT 100
+
+
+
+#P6
+SELECT DISTINCT ?name
+FROM <http://example.org/transparencia>
+WHERE { 
+       {?role a org:Role; skos:prefLabel "Prof. Asistente".}
+       UNION
+       {?role a org:Role; skos:prefLabel "Prof.Titular".}
+       UNION
+       {?role a org:Role; skos:prefLabel "Prof. Asociado".}
+
+       ?membership a org:Membership; org:role ?role .
+       ?membership org:member ?person .
+       ?person foaf:name ?name .
+
+}
+LIMIT 100
+
+
+#p7 
+SELECT DISTINCT ?name ?estamento ?calificacion
+FROM <http://example.org/transparencia>
+WHERE { 
+       ?membership a org:Membership; :estamento ?estamento .
+       ?membership :calificacion ?calificacion .
+       ?membership org:member ?person .
+       ?person foaf:name ?name .
+       FILTER(?estamento!="Académico") 
+}
+LIMIT 10
+
+
+#P8
+
+SELECT DISTINCT ?nombre ?cargo ?remuneracion ?unidad
+FROM <http://example.org/transparencia>
+WHERE { 
+        ?membership a org:Membership; org:member ?person .
+        ?membership org:organization ?org .
+        ?membership :remuneracionBrutaMensual ?remuneracion.
+        ?membership org:role ?role .
+        ?role skos:prefLabel ?cargo .
+        ?org a org:OrganizationalUnit; foaf:name ?unidad .
+        ?person a foaf:Person; foaf:name ?nombre .
+
+}
+ORDER BY DESC(?remuneracion)
+LIMIT 10 
+
+
+
+#P9
+
+SELECT DISTINCT ?nombre ?remuneracion 
+FROM <http://example.org/transparencia>
+WHERE { 
+        ?membership a org:Membership; org:member ?person .
+        ?membership org:organization ?org .
+        ?membership :remuneracionBrutaMensual ?remuneracion.
+
+        ?org a org:OrganizationalUnit; foaf:name 'Facultad de Ciencias Físicas y Matemáticas' .
+        ?person a foaf:Person; foaf:name ?nombre .
+
+        FILTER(?remuneracion > 6000000 )
+}
+ORDER BY DESC(?remuneracion)
+
+
+#P10
+ASK
+FROM <http://example.org/transparencia>
+WHERE { ?person a foaf:Person.
+        OPTIONAL {?person :apellidoMaterno ?apellidoMaterno .}
+        FILTER(!BOUND(?apellidoMaterno)) 
+}
+
+
+#P11
+
+CONSTRUCT {?person a foaf:Person .
+           ?person foaf:name ?nombre .
+           ?person :worksIn ?unidad}
+
+FROM <http://example.org/transparencia>
+WHERE { ?person a foaf:Person.
+        ?person foaf:name ?nombre .
+        OPTIONAL {?person :apellidoMaterno ?apellidoMaterno .}
+        FILTER(!BOUND(?apellidoMaterno)) 
+        ?membership a org:Membership; org:member ?person .
+        ?membership org:organization ?org .
+        ?org a org:OrganizationalUnit; foaf:name ?unidad .
+}
