@@ -34,7 +34,6 @@ ORDER BY (?unidad)
 
 #P6
 
-
 SELECT ?nombre ?sueldo 
 
 WHERE {
@@ -49,7 +48,7 @@ WHERE {
     }
 
     {    
-      SELECT ?person (count(?person) as ?mayores_sueldos)
+      SELECT ?person (count(?person)-1 as ?mayores_sueldos)
       WHERE{
         ?membership a org:Membership; org:member ?person .
         ?person foaf:name ?nombre . 
@@ -58,7 +57,7 @@ WHERE {
         ?membership2 a org:Membership.
         ?membership2 :remuneracionBrutaMensual ?sueldo2 .
 
-        FILTER(?sueldo2> ?sueldo && ?membership2 != ?membership)    
+        FILTER(?sueldo2>=?sueldo)    
       }
       GROUP BY (?person)
     }
