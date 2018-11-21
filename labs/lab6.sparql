@@ -1,3 +1,6 @@
+# autor: José Astorga
+
+# Todas las consultas utilizan el mismo encabezado
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX org:  <http://www.w3.org/ns/org#>
 PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -10,8 +13,6 @@ FROM <http://example.org/transparencia>
 WHERE { ?person a foaf:Person.
         ?person foaf:name ?name . }
 LIMIT 100
-
-
 
 #P2
 SELECT DISTINCT ?name ?nombres ?apellidoPaterno ?apellidoMaterno
@@ -26,15 +27,12 @@ LIMIT 100
 
 
 #P3
-
 SELECT DISTINCT ?estamento
 FROM <http://example.org/transparencia>
 WHERE { ?membership a org:Membership; :estamento ?estamento
 }
 
 ORDER BY ASC(?estamento)
-
-
 
 #P4
 SELECT DISTINCT ?name ?estamento
