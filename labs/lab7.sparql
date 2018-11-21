@@ -1,0 +1,140 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX org:  <http://www.w3.org/ns/org#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://datosabiertos.cl/v/>
+
+#  A las preguntas donde no se especifica un orden especifico, le asigné alguno que permita una mejor lectura.
+
+#P1
+SELECT DISTINCT ?nombre ?unidad ?C
+FROM <http://example.org/transparencia>
+WHERE { 
+  ?membership a org:Membership; org:member ?person .
+  ?membership org:organization ?org .
+  ?membership :remuneracionBrutaMensual ?remuneracion.
+  ?membership :asignacionesEspeciales ?asignacionEspecial.
+  ?org a org:OrganizationalUnit; foaf:name ?unidad .
+  ?person a foaf:Person; foaf:name ?nombre .
+  BIND(?remuneracion - ?asignacionEspecial AS ?C)
+}
+ORDER BY DESC(?C)
+LIMIT 100
+
+
+#P2
+SELECT DISTINCT ?estamento 
+                (COUNT(?membership) as ?numero_personas ) 
+                (SUM(?sueldo) as ?total_pagados)
+                (AVG(?sueldo) as ?sueldo_promedio )
+
+FROM <http://example.org/transparencia>
+WHERE { 
+  ?membership a org:Membership; :estamento ?estamento .
+  ?membership :remuneracionBrutaMensual ?sueldo.
+}
+GROUP BY (?estamento) 
+ORDER BY DESC(?numero_personas)
+
+
+#P3
+SELECT DISTINCT ?unidad ?estamento 
+                (COUNT(?membership) as ?numero_personas ) 
+                (SUM(?sueldo) as ?suma_sueldos)
+                (AVG(?sueldo) as ?sueldo_promedio )
+
+FROM <http://example.org/transparencia>
+WHERE { 
+  ?membership a org:Membership; :estamento ?estamento .
+  ?membership :remuneracionBrutaMensual ?sueldo.
+  ?membership org:organization ?org .
+  ?org a org:OrganizationalUnit; foaf:name ?unidad .
+}
+GROUP BY ?estamento ?unidad
+HAVING(AVG(?sueldo) > 1500000)
+ORDER BY DESC(?sueldo_promedio)
+
+
+
+#P4
+SELECT ?unidad ?nombre ?estamento ?sueldo
+FROM <http://example.org/transparencia>
+WHERE{
+  ?membership a org:Membership; org:member ?person .
+  ?person foaf:name ?nombre . 
+  ?membership :remuneracionBrutaMensual ?sueldo .
+  ?membership :estamento ?estamento .
+  ?membership org:organization ?org.
+  ?org a org:OrganizationalUnit; foaf:name ?unidad .
+  #si el sueldo corresponde al maximo sueldo de la unidad...
+  FILTER( ?max_sueldo = ?sueldo)
+  {
+    #max de sueldo por unidad
+    SELECT ?unidad (max(?sueldo) AS ?max_sueldo )
+    WHERE{
+      ?membership a org:Membership; :remuneracionBrutaMensual ?sueldo .
+      ?membership org:organization ?org.
+      ?org a org:OrganizationalUnit; foaf:name ?unidad .
+    }
+    GROUP BY ?unidad 
+  }
+}
+ORDER BY (?unidad)
+
+
+#P5
+SELECT DISTINCT ?estamento ((xsd:float(?suma_estamentos)/( ?suma_total)) as ?fraccion_sueldo)
+FROM <http://example.org/transparencia>
+WHERE{
+  {
+    #total de sueldos por estamentos
+    SELECT DISTINCT ?estamento (SUM(?sueldo) as ?suma_estamentos)
+    WHERE{ 
+      ?membership a org:Membership; :remuneracionBrutaMensual ?sueldo .
+      ?membership :estamento ?estamento
+    }
+    GROUP BY(?estamento)
+  }
+  {
+    #total de sueldos pagados
+    SELECT DISTINCT (SUM(?sueldo) as ?suma_total)
+    WHERE{ 
+      ?membership a org:Membership; :remuneracionBrutaMensual ?sueldo .
+    }
+  }
+}
+ORDER BY DESC(?fraccion_sueldo)
+
+#P6 
+SELECT ?nombre ?sueldo 
+FROM <http://example.org/transparencia>
+WHERE {
+  ?membership a org:Membership; org:member ?person .
+  ?person foaf:name ?nombre . 
+  ?membership :remuneracionBrutaMensual ?sueldo .
+  #filtro para que los sueldos mejores sean menos que 1% de personas
+  # (¿ mayores sueldos <= o < one_percent ?)
+  FILTER( ?mayores_sueldos <= ?one_percent)
+  {
+    #Se encuentra el 1%
+    SELECT (count (distinct ?person)/100 as ?one_percent )
+    WHERE{ ?membership a org:Membership; org:member ?person . }
+  }
+
+  { 
+    #contar personas con sueldos mayores, se descuenta 1 porque eventualmente se contará así mismo 
+    #(se podría haber excluído la misma persona pero tendría problemas para la primera persona (no tendŕia mayores_sueldos))   
+    SELECT ?person (count(?person)-1 as ?mayores_sueldos)
+    WHERE{
+      ?membership a org:Membership; org:member ?person .
+      ?person foaf:name ?nombre . 
+      ?membership :remuneracionBrutaMensual ?sueldo .
+      
+      ?membership2 a org:Membership.
+      ?membership2 :remuneracionBrutaMensual ?sueldo2 .
+      FILTER(?sueldo2>=?sueldo)    
+    }
+      GROUP BY (?person)
+  }
+}
+ORDER BY DESC(?sueldo)
