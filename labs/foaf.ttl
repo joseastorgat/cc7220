@@ -1,0 +1,37 @@
+@base <https://users.dcc.uchile.cl/~jastorga/foaf.ttl> .
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<> a foaf:Document ;
+   foaf:primaryTopic <#ja> ;
+   dc:date "2018-11-26"^^xsd:date ;
+   dc:creator <#ja> ;
+   dc:title "José's FOAF Profile"@en .
+
+<#ja> a foaf:Person ;
+  rdfs:label "José Astorga" ;
+  foaf:name "José Astorga" ;
+  foaf:givenName "José" ;
+  foaf:familyName "Astorga" ;
+  foaf:img <https://uchile-robotics.github.io/static/img/bender/people/JoseAstorga.png> ;
+  foaf:age 22;
+  foaf:gender 'male';
+
+  foaf:based_near <http://sws.geonames.org/8261436/> ;
+
+  foaf:workInfoHomepage <http://robotica-uchile.amtc.cl/pepper-index.html>, 
+                        <http://duckietown.cl/>;
+   
+  foaf:schoolHomepage <https://www.dcc.uchile.cl/>;
+  foaf:account <https://www.github.com/joseastorgat>;
+  foaf:knows  <https://users.dcc.uchile.cl/~ahogan/foaf.ttl#ah>,
+              <https://users.dcc.uchile.cl/~dhernand/foaf.ttl#dh> ,
+              <https://users.dcc.uchile.cl/~lbustos/foaf.ttl#lb>,
+              <https://users.dcc.uchile.cl/~gmontana/foaf.ttl#gm>,
+              <http://users.dcc.uchile.cl/~dpalma/foaf.ttl>;
+
+  foaf:interest <https://www.wikidata.org/wiki/Q131074>, <https://www.wikidata.org/wiki/Q27894574>, <https://www.wikidata.org/wiki/Q483815>,  <https://www.wikidata.org/wiki/Q5597803>, <https://www.wikidata.org/wiki/Q170250> .
