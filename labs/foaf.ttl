@@ -34,4 +34,8 @@
               <https://users.dcc.uchile.cl/~gmontana/foaf.ttl#gm>,
               <https://users.dcc.uchile.cl/~dpalma/foaf.ttl#dp>;
 
-  foaf:interest <http://www.wikidata.org/entity/Q131074>, <http://www.wikidata.org/entity/Q27894574>, <http://www.wikidata.org/entity/Q483815>,  <http://www.wikidata.org/entity/Q5597803>, <http://www.wikidata.org/entity/Q170250> .
+  foaf:interest <http://www.wikidata.org/entity/Q131074>,
+                <http://www.wikidata.org/entity/Q27894574>,
+                <http://www.wikidata.org/entity/Q483815>,
+                <http://www.wikidata.org/entity/Q5597803>,
+                <http://www.wikidata.org/entity/Q170250> .
