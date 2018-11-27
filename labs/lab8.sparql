@@ -1,0 +1,39 @@
+
+#P1
+SELECT COUNT(*) as ?triples
+FROM <https://users.dcc.uchile.cl/~jastorga/foaf.ttl>
+WHERE { ?p ?q ?s }
+
+
+#P2
+SELECT COUNT(DISTINCT ?g) as ?apariciones
+WHERE { GRAPH ?g { ?p ?q <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja>} }
+
+
+
+#P3
+
+
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT DISTINCT ?name ?age 
+WHERE { 
+       <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows ?p .
+
+       GRAPH ?g {
+          ?p foaf:age ?age .
+          ?p foaf:name ?name .
+   }
+} 
+
+
+#P4
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?name
+WHERE{
+       <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows ?p .
+       GRAPH ?g {?p foaf:knows* ?q .
+                 ?q foaf:name ?name . }
+
+      
+}

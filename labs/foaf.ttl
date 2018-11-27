@@ -32,6 +32,6 @@
               <https://users.dcc.uchile.cl/~dhernand/foaf.ttl#dh> ,
               <https://users.dcc.uchile.cl/~lbustos/foaf.ttl#lb>,
               <https://users.dcc.uchile.cl/~gmontana/foaf.ttl#gm>,
-              <http://users.dcc.uchile.cl/~dpalma/foaf.ttl>;
+              <http://users.dcc.uchile.cl/~dpalma/foaf.ttl#dp>;
 
   foaf:interest <https://www.wikidata.org/wiki/Q131074>, <https://www.wikidata.org/wiki/Q27894574>, <https://www.wikidata.org/wiki/Q483815>,  <https://www.wikidata.org/wiki/Q5597803>, <https://www.wikidata.org/wiki/Q170250> .
