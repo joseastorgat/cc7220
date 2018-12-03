@@ -1,0 +1,108 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@base <http://ex.org/>.
+
+<PeliculaMap> a rr:TriplesMap ;
+
+	rr:logicalTable [
+		rr:tableName "pelicula"
+	] ;
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/pelicula/nombre={nombre};anho={anho}" ;
+		rr:class <http://imdb.com/rdf/pelicula>
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/pelicula#nombre>;
+		rr:objectMap [rr:column "nombre"]
+	];
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/pelicula#anho>;
+		rr:objectMap [rr:column "anho"]
+	];
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/pelicula#calificacion>;
+		rr:objectMap [rr:column "calificacion"]
+	].
+
+<ActorMap> a rr:TriplesMap ;
+	rr:logicalTable [
+		rr:tableName "actor"
+	];
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/actor/nombre={nombre}" ;
+		rr:class <http://imdb.com/rdf/actor>
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/actor#nombre>;
+		rr:objectMap [rr:column "nombre"]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/actor#genero>;
+		rr:objectMap [rr:column "genero"]
+	].
+
+
+<PersonajeMap> a rr:TriplesMap ;
+	rr:logicalTable [
+		rr:tableName "personaje"
+	];
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/personaje/a_nombre={a_nombre};p_nombre={p_nombre};p_anho={p_anho};personaje={personaje}" ;
+		rr:class <http://imdb.com/rdf/personaje>
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#ref-a_nombre>;
+		rr:objectMap [
+			rr:parentTriplesMap <ActorMap>;
+			rr:joinCondition [
+				rr:child "a_nombre";
+				rr:parent "nombre"
+			]
+		]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#ref-p_nombre;p_anho>;
+		rr:objectMap [
+			rr:parentTriplesMap <PeliculaMap>;
+			rr:joinCondition [
+				rr:child "p_nombre";
+				rr:parent "nombre"
+			];
+			rr:joinCondition [
+				rr:child "p_anho";
+				rr:parent "anho"
+			]
+		]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#a_nombre>;
+		rr:objectMap [rr:column "a_nombre"]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#p_nombre>;
+		rr:objectMap [rr:column "p_nombre"]
+	];
+	
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#p_anho>;
+		rr:objectMap [rr:column "p_anho"]
+	];
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#nombre>;
+		rr:objectMap [rr:column "personaje"]
+	].
+	

@@ -1,0 +1,150 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix schema: <http://schema.org/> .
+@prefix bibo: <http://purl.org/ontology/bibo/#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+	
+@base <http://ex.org/>.
+
+<PeliculaMap> a rr:TriplesMap ;
+
+	rr:logicalTable [
+		rr:tableName "pelicula"
+	] ;
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/pelicula/nombre={nombre};anho={anho}" ;
+		rr:class schema:Movie, bibo:Film
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate rdfs:label;
+		rr:objectMap [
+			rr:column "nombre";
+			rr:xsd:language "en"
+			]
+	];
+	
+	rr:predicateObjectMap [
+		rr:predicate dcterms:created;
+		rr:objectMap [
+			rr:column "anho";
+			rr:datatype xsd:gYear
+		]
+	].
+#	rr:predicateObjectMap [
+#		rr:predicate <http://imdb.com/rdf/pelicula#calificacion>;		
+#		rr:subjectMap [
+#					rr:class schema:Rating
+#				];
+#				rr:predicateObjectMap[
+#					rr:predicate schema:ratingValue;
+#					rr:column "calificacion";
+#					rr:datatype xsd:float
+#				];
+#				rr:predicateObjectMap[
+#					rr:predicate schema:bestRating;
+#					rr:constant "10.0";
+#					rr:datatype xsd:float
+#				];
+#				rr:predicateObjectMap[
+#					rr:predicate schema:worstRating;
+#					rr:constant "1.0";
+#					rr:datatype xsd:float
+#			]
+#	].
+
+<ActorMap> a rr:TriplesMap ;
+	rr:logicalTable [
+		rr:sqlQuery "SELECT nombre, genero, COUNT(P.p_nombre) as peliculas FROM (SELECT DISTINCT a_nombre, p_nombre FROM personaje) P, actor A WHERE A.nombre = P.a_nombre GROUP BY(A.nombre)";
+		rr:sqlVersion rr:SQL2008
+	];
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/actor/nombre={nombre}" ;
+		rr:class foaf:Person
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate foaf:name;
+		rr:objectMap [
+			rr:column "nombre"; 
+			rr:datatype xsd:string
+		]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate foaf:gender;
+		rr:objectMap [rr:template "http://imdb.com/rdf/g/{genero}"]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/countTop250>;
+		rr:objectMap [
+			rr:column "peliculas";
+			rr:datatype xsd:integer
+		]
+	].
+
+
+<PersonajeMap> a rr:TriplesMap ;
+	rr:logicalTable [
+		rr:tableName "personaje"
+	];
+
+	rr:subjectMap [
+		rr:template "http://imdb.com/rdf/personaje/a_nombre={a_nombre};p_nombre={p_nombre};p_anho={p_anho};personaje={personaje}" ;
+		rr:class <http://imdb.com/rdf/personaje>
+	] ;
+	
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#ref-a_nombre>;
+		rr:objectMap [
+			rr:parentTriplesMap <ActorMap>;
+			rr:joinCondition [
+				rr:child "a_nombre";
+				rr:parent "nombre"
+			]
+		]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#ref-p_nombre;p_anho>;
+		rr:objectMap [
+			rr:parentTriplesMap <PeliculaMap>;
+			rr:joinCondition [
+				rr:child "p_nombre";
+				rr:parent "nombre"
+			];
+			rr:joinCondition [
+				rr:child "p_anho";
+				rr:parent "anho"
+			]
+
+		]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#a_nombre>;
+		rr:objectMap [rr:column "a_nombre"]
+	];
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#p_nombre>;
+		rr:objectMap [rr:column "p_nombre"]
+	];
+	
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#p_anho>;
+		rr:objectMap [rr:column "p_anho"]
+	];
+	
+
+	rr:predicateObjectMap [
+		rr:predicate <http://imdb.com/rdf/personaje#nombre>;
+		rr:objectMap [rr:column "personaje"]
+	].
+	
