@@ -48,23 +48,6 @@ WHERE {
 
 ######################################   P4   ######################################
 
-
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT DISTINCT ?name
-FROM <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>
-WHERE{
-	  { <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows* ?q .
-      	GRAPH ?g {?q foaf:name ?name . }	
-    }
-
-    UNION
-    {
-      <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows ?p .
-      GRAPH ?g { ?p a foaf:Person; foaf:knows* ?q .}
-      GRAPH ?r { ?q a foaf:Person; foaf:name ?name . }	
-    }
-}
-
 # Alternativa: Usando solo default graph
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT DISTINCT ?name
@@ -75,16 +58,33 @@ WHERE{
 
 
 
+##############################################
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?name
+FROM <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>
+WHERE{
+      { <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows* ?q .
+        GRAPH ?g {?q foaf:name ?name . }    
+    }
+
+    UNION
+    {
+      <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows ?p .
+      GRAPH ?g { ?p a foaf:Person; foaf:knows* ?q .}
+      GRAPH ?r { ?q a foaf:Person; foaf:name ?name . }  
+    }
+}
+
 
 ######################################   P5   ######################################
 
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX ex: <http://example.org/>
 INSERT {
-		GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
-			<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?p .
-		}
-	}
+        GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
+            <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?p .
+        }
+    }
 WHERE{
       <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows* ?p .
       ?p a foaf:Person .
@@ -96,16 +96,16 @@ WHERE{
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX ex: <http://example.org/>
 INSERT {
-		GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
-			<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:stranger ?p .
-		}
-	}
+        GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
+            <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:stranger ?p .
+        }
+    }
 WHERE{
-		GRAPH ?g { ?p a foaf:Person . }
-	 	FILTER NOT EXISTS{ 
-	 		GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{ 
-	 			<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?p . }
-		}
+        GRAPH ?g { ?p a foaf:Person . }
+        FILTER NOT EXISTS{ 
+            GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{ 
+                <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?p . }
+        }
 }
 
 
@@ -114,16 +114,17 @@ WHERE{
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX ex: <http://example.org/>
 INSERT {
-	GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
-		?p foaf:name ?name .
-	}
+    GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{
+        ?p foaf:name ?name .
+    }
 }
 WHERE{
-	GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{ 
-		<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:stranger ?p . }
-	GRAPH ?g { ?p foaf:name ?name .	}
+    GRAPH <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>{ 
+        <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:stranger ?p . }
+    GRAPH ?g { ?p foaf:name ?name . }
 }
 
+#####################################################################################
 
 # TEST; Consulta (antes de insertar los datos: 0 resultados )
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -141,15 +142,28 @@ WHERE { <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:stranger ?p .
 
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX ex: <http://example.org/>
-SELECT DISTINCT ?name ?p
-FROM <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>
+SELECT DISTINCT ?name 
 WHERE {
-	 	<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:knows ?p . # conozco a un sujeto p
-		GRAPH ?g {  ?q foaf:knows ?p . 										# q conoce a p también
-					?q foaf:name ?name .  }
+        {  
+            ?q a foaf:Person . # todas las personas
+        }
+            MINUS{
+            {
+                <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?p . # conozco a un sujeto ?p (transitivamente)  
+                ?q ex:transitiveKnows ?p .                                                  # sujeto ?q tambien conoce a ?p (transitivamente)
+            }                                                                               # se puede reemplazar ex:transitiveKnows por foaf:knows* pero tarda mucho tiempo
+            UNION
+            {
+                <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> ex:transitiveKnows ?q . # Tambien incluimos a las personas que conocemos transitivamente ya que se puede considerar que las conocemos recursivamente (hay un camino de nosotros a ellos)
+            }
+            UNION
+            {
+                ?q ex:transitiveKnows <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> . # Y los que me conoce a mi
+            }
+        }
+        ?q foaf:name ?name
 }
 LIMIT 1
-
 
 ######################################   P9   ######################################
 
@@ -158,27 +172,27 @@ PREFIX ex: <http://example.org/>
 SELECT DISTINCT ?person_name ?movie_name
 FROM <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>
 WHERE {
-	 	<https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:interest ?movie . 
-	 	GRAPH ?g { ?person foaf:interest ?movie .
-	 			   ?person foaf:name ?person_name . }
-	 	GRAPH ?r { ?movie rdfs:label ?movie_name}
+        <https://users.dcc.uchile.cl/~jastorga/foaf.ttl#ja> foaf:interest ?movie . 
+        GRAPH ?g { ?person foaf:interest ?movie .
+                   ?person foaf:name ?person_name . }
+        GRAPH ?r { ?movie rdfs:label ?movie_name}
 
-	 	FILTER(?g != <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>)
+        FILTER(?g != <http://users.dcc.uchile.cl/~jastorga/foaf.ttl>)
         FILTER (lang(?movie_name) = 'en')
 }
 
 
-######################################   P9   ######################################
+######################################   P10   ######################################
 
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX ex: <http://example.org/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT DISTINCT ?movie_name COUNT( DISTINCT ?person) as ?popularidad 
 WHERE {
-	 	GRAPH ?g { ?person foaf:interest ?movie . }
-	 	GRAPH ?r { ?movie rdfs:label ?movie_name}
+        GRAPH ?g { ?person foaf:interest ?movie . }
+        GRAPH ?r { ?movie rdfs:label ?movie_name}
      FILTER (lang(?movie_name) = 'en')
-	 	}
+        }
 GROUP BY ?movie_name
 ORDER BY DESC(?popularidad)
 
