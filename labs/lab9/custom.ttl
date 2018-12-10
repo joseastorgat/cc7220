@@ -23,7 +23,7 @@
 		rr:predicate rdfs:label;
 		rr:objectMap [
 			rr:column "nombre";
-			rr:xsd:language "en"
+			rr:language "en"
 			]
 	];
 	
@@ -34,27 +34,7 @@
 			rr:datatype xsd:gYear
 		]
 	].
-#	rr:predicateObjectMap [
-#		rr:predicate <http://imdb.com/rdf/pelicula#calificacion>;		
-#		rr:subjectMap [
-#					rr:class schema:Rating
-#				];
-#				rr:predicateObjectMap[
-#					rr:predicate schema:ratingValue;
-#					rr:column "calificacion";
-#					rr:datatype xsd:float
-#				];
-#				rr:predicateObjectMap[
-#					rr:predicate schema:bestRating;
-#					rr:constant "10.0";
-#					rr:datatype xsd:float
-#				];
-#				rr:predicateObjectMap[
-#					rr:predicate schema:worstRating;
-#					rr:constant "1.0";
-#					rr:datatype xsd:float
-#			]
-#	].
+
 
 <ActorMap> a rr:TriplesMap ;
 	rr:logicalTable [
@@ -148,3 +128,58 @@
 		rr:objectMap [rr:column "personaje"]
 	].
 	
+
+<CalificacionMap> a rr:TriplesMap ;
+	rr:logicalTable[
+		rr:tableName "pelicula"
+	] ;
+	
+	rr:subjectMap [
+		rr:template "_b_nombre={nombre};anho={anho};";
+		rr:class schema:Rating;
+		rr:termType rr:BlankNode#no estoy seguro que esto es necesario
+	];
+	
+	rr:predicateObjectMap[
+		rr:predicate schema:ratingValue;
+		rr:objectMap[
+			rr:column "calificacion";
+			rr:datatype xsd:float
+			]
+	];
+
+	rr:predicateObjectMap[
+		rr:predicate schema:worstRating;
+		rr:objectMap[
+			rr:constant "1.0";
+			rr:datatype xsd:float
+			]
+	];
+
+
+	rr:predicateObjectMap[
+		rr:predicate schema:bestRating;
+		rr:objectMap[
+			rr:constant "10.0";
+			rr:datatype xsd:float
+			]
+	];
+
+	rr:predicateObjectMap[
+		rr:predicate schema:subjectOf;
+		
+		rr:objectMap[	
+			rr:template "http://imdb.com/rdf/pelicula/nombre={nombre};anho={anho}" ;
+
+		#
+		#	rr:parentTriplesMap <PeliculaMap>;
+		#	rr:joinCondition [
+		#		rr:child "nombre";
+		#		rr:parent "nombre"
+		#	];
+		#	rr:joinCondition [
+		#		rr:child "anho";
+		#		rr:parent "anho"
+		#	]
+		]
+	].

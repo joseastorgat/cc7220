@@ -1,7 +1,6 @@
 #José Astorga
 
 ######################################      ######################################
-
 # Al parecer no se puede usar agregaciones por lo que resuelvo limitando en 1
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX imdb: <http://imdb.com/rdf/>
@@ -12,6 +11,5 @@ WHERE { ?actor a foaf:Person .
     }
 ORDER BY DESC (?top)
 LIMIT 1
-
-
+	
 ######################################      ######################################
